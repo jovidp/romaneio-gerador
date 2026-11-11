@@ -183,7 +183,7 @@ title:'ROMANEIO DE ENTREGA', brand:'SOUTH', program:'',
 issuer:'FLORIPA IND E COM DE ROUPAS LTDA-MAGARCA', carrier:'', driver:'', plate:'',
 copies:'1', receipt:'Recebi de {EMITENTE} os volumes acima relacionados, referentes à carga {CARGA}, em perfeito estado e sem ressalvas.'
 };
-const state = { rows:[], headers:[], groups:[], aviso:'', mode:'simple', generated:false };
+const state = { rows:[], headers:[], groups:[], faturas:{}, aviso:'', mode:'simple', generated:false };
 
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -278,19 +278,22 @@ function sortedItems(items){ return [...items].sort((a,b)=>{ const p=nval(a.PEDI
 function checked(v){ return ['SIM','S','X','1','TRUE','OK','CONFERIDO'].includes(norm(v)); }
 function fmtDate(v){ if(v instanceof Date&&!isNaN(v)){ const pad=n=>String(n).padStart(2,'0'); return `${pad(v.getDate())}/${pad(v.getMonth()+1)}/${v.getFullYear()} ${pad(v.getHours())}:${pad(v.getMinutes())}`; } const s=text(v).trim(); if(!s)return ''; const m=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+(\d{1,2}):(\d{2})(?::\d{2})?)?/); if(m)return `${m[1].padStart(2,'0')}/${m[2].padStart(2,'0')}/${m[3]}${m[4]?' '+m[4].padStart(2,'0')+':'+m[5]:''}`; return s; }
 function nowPt(){ const d=new Date(),pad=n=>String(n).padStart(2,'0'); return `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`; }
+const cargaKey=c=>String(c).trim().replace(/^0+(?=\d)/,'');
+// null = sem informação de fatura (planilha, .exe ou sistema de rotas fora): a linha nem aparece
+function faturaDe(g){ const f=state.faturas[cargaKey(g.carga)]; if(!f)return null; const nfs=f[g.codCliente]||[]; return nfs.length?nfs.join(' / '):'—'; }
 function receiptFor(g,c){ return c.receipt.replaceAll('{EMITENTE}',c.issuer).replaceAll('{CARGA}',g.carga); }
 
 function renderSimple(g,c){
 let current=null,shade=false; const rows=sortedItems(g.items).map(r=>{ if(text(r.PEDIDO)!==current){current=text(r.PEDIDO);shade=!shade;} return `<tr class="${shade?'alt':''}"><td class="center">${esc(fmtDate(r.VOLUMES_EMB))}</td><td class="center">${esc(r.NR_VOL)}</td><td class="center">${esc(r.PEDIDO)}</td><td>${esc(r.TIPO_PEDIDO)}</td><td></td></tr>`; }).join('');
-return `<div class="paper simple"><div class="doc-title">${esc(c.title)}</div><div class="carga-title">CARGA: ${esc(g.carga)}</div><div class="store-title">${esc(g.codCliente)} - ${esc(g.cliente)}</div><table class="rtable simple-table"><colgroup><col class="c1"><col class="c2"><col class="c3"><col class="c4"><col class="c5"></colgroup><thead><tr><th>DATA</th><th>CAIXA</th><th>PEDIDO</th><th>TIPO DE PEDIDO</th><th>RECEBIDO</th></tr></thead><tbody>${rows}<tr class="total"><td colspan="5">TOTAL: ${g.volumes} VOLUME(S)</td></tr><tr class="sign-row"><td colspan="5"><div class="simple-footer"><div class="sig-col"><div class="sig-row"><b>ASS. EXPEDIÇÃO:</b><span class="line"></span></div><div class="sig-row"><b>ASS. LOJA 1:</b><span class="line"></span></div><div class="sig-row"><b>ASS. LOJA 2:</b><span class="line"></span></div><div class="sig-row"><b>CARIMBO:</b><span class="line"></span></div><div class="sig-row"><b>DATA:</b><span class="line"></span></div></div><div></div><div class="occ"><div class="occ-head"><b>OCORRÊNCIAS:</b><span class="occ-line"></span></div>${'<div class="occ-line"></div>'.repeat(4)}</div></div></td></tr></tbody></table></div>`;
+return `<div class="paper simple"><div class="doc-title">${esc(c.title)}</div><div class="carga-title">CARGA: ${esc(g.carga)}</div>${faturaDe(g)!==null?`<div class="carga-title">FATURA: ${esc(faturaDe(g))}</div>`:''}<div class="store-title">${esc(g.codCliente)} - ${esc(g.cliente)}</div><table class="rtable simple-table"><colgroup><col class="c1"><col class="c2"><col class="c3"><col class="c4"><col class="c5"></colgroup><thead><tr><th>DATA</th><th>CAIXA</th><th>PEDIDO</th><th>TIPO DE PEDIDO</th><th>RECEBIDO</th></tr></thead><tbody>${rows}<tr class="total"><td colspan="5">TOTAL: ${g.volumes} VOLUME(S)</td></tr><tr class="sign-row"><td colspan="5"><div class="simple-footer"><div class="sig-col"><div class="sig-row"><b>ASS. EXPEDIÇÃO:</b><span class="line"></span></div><div class="sig-row"><b>ASS. LOJA 1:</b><span class="line"></span></div><div class="sig-row"><b>ASS. LOJA 2:</b><span class="line"></span></div><div class="sig-row"><b>CARIMBO:</b><span class="line"></span></div><div class="sig-row"><b>DATA:</b><span class="line"></span></div></div><div></div><div class="occ"><div class="occ-head"><b>OCORRÊNCIAS:</b><span class="occ-line"></span></div>${'<div class="occ-line"></div>'.repeat(4)}</div></div></td></tr></tbody></table></div>`;
 }
 function renderComplete(g,c){
 let current=null,shade=false; const rows=sortedItems(g.items).map(r=>{if(text(r.PEDIDO)!==current){current=text(r.PEDIDO);shade=!shade;}return `<tr class="${shade?'alt':''}"><td class="center">${esc(r.PEDIDO)}</td><td>${esc(r.TIPO_PEDIDO)}</td><td class="center">${esc(r.NR_VOL)}</td><td class="center">${esc(fmtDate(r.VOLUMES_EMB))}</td><td class="received">${checked(r.CONFERIDO)?'☒':'☐'}</td></tr>`;}).join('');
-return `<div class="paper complete"><div class="complete-top"><div class="ctitle">${esc(c.title)}</div><div class="brandcell">${esc(c.brand)}</div></div><div class="section-title">INFORMAÇÕES DA ENTREGA</div><div class="delivery-grid"><div class="label">Carga:</div><div>${esc(g.carga)}</div><div class="label">Rota:</div><div>${esc(g.rota)}</div><div class="label">Emissão:</div><div>${esc(nowPt())}</div><div class="label">Transportadora:</div><div class="span2">${esc(c.carrier)}</div><div class="label">Placa:</div><div>${esc(c.plate)}</div><div></div><div class="label">Motorista:</div><div class="span2">${esc(c.driver)}</div><div class="label">Total de volumes:</div><div>${g.volumes}</div><div></div></div><div class="section-title">DESTINATÁRIO</div><div class="recipient"><div class="label">Cliente:</div><div>${esc(g.codCliente)} - ${esc(g.cliente)}</div></div><table class="rtable complete-table"><colgroup><col><col><col><col><col></colgroup><thead><tr><th>PEDIDO</th><th>TIPO DE PEDIDO</th><th>CAIXA</th><th>EMBALADO EM</th><th>RECEBIDO</th></tr></thead><tbody>${rows}<tr class="total"><td colspan="2">TOTAL: ${g.pedidos} PEDIDO(S)</td><td colspan="3">${g.volumes} VOLUME(S)</td></tr><tr class="sign-row"><td colspan="5"><div class="receipt-text">${esc(receiptFor(g,c))}</div><div class="signatures"><div class="sign-box"><div class="sign-line"></div><div class="sign-label">NOME / ASSINATURA</div></div><div></div><div class="sign-box"><div class="sign-line"></div><div class="sign-label">DATA</div></div></div><div class="document-line"><div class="line"></div><b>DOCUMENTO</b></div>${c.program?`<div style="margin-top:8px;text-align:right;font-size:7pt;color:#666">${esc(c.program)}</div>`:''}</td></tr></tbody></table></div>`;
+return `<div class="paper complete"><div class="complete-top"><div class="ctitle">${esc(c.title)}</div><div class="brandcell">${esc(c.brand)}</div></div><div class="section-title">INFORMAÇÕES DA ENTREGA</div><div class="delivery-grid"><div class="label">Carga:</div><div>${esc(g.carga)}</div><div class="label">Rota:</div><div>${esc(g.rota)}</div><div class="label">Emissão:</div><div>${esc(nowPt())}</div><div class="label">Transportadora:</div><div class="span2">${esc(c.carrier)}</div><div class="label">Placa:</div><div>${esc(c.plate)}</div><div></div><div class="label">Motorista:</div><div class="span2">${esc(c.driver)}</div><div class="label">Total de volumes:</div><div>${g.volumes}</div><div></div></div><div class="section-title">DESTINATÁRIO</div><div class="recipient"><div class="label">Cliente:</div><div>${esc(g.codCliente)} - ${esc(g.cliente)}</div>${faturaDe(g)!==null?`<div class="label">Fatura:</div><div>${esc(faturaDe(g))}</div>`:''}</div><table class="rtable complete-table"><colgroup><col><col><col><col><col></colgroup><thead><tr><th>PEDIDO</th><th>TIPO DE PEDIDO</th><th>CAIXA</th><th>EMBALADO EM</th><th>RECEBIDO</th></tr></thead><tbody>${rows}<tr class="total"><td colspan="2">TOTAL: ${g.pedidos} PEDIDO(S)</td><td colspan="3">${g.volumes} VOLUME(S)</td></tr><tr class="sign-row"><td colspan="5"><div class="receipt-text">${esc(receiptFor(g,c))}</div><div class="signatures"><div class="sign-box"><div class="sign-line"></div><div class="sign-label">NOME / ASSINATURA</div></div><div></div><div class="sign-box"><div class="sign-line"></div><div class="sign-label">DATA</div></div></div><div class="document-line"><div class="line"></div><b>DOCUMENTO</b></div>${c.program?`<div style="margin-top:8px;text-align:right;font-size:7pt;color:#666">${esc(c.program)}</div>`:''}</td></tr></tbody></table></div>`;
 }
 function groupSearchKey(g){
 const details=g.items.flatMap(r=>[r.PEDIDO,r.TIPO_PEDIDO,r.NR_VOL,r.VOLUMES_EMB]).join(' ');
-return searchNorm([g.carga,g.rota,g.codCliente,g.cliente,details].join(' '));
+return searchNorm([g.carga,g.rota,g.codCliente,g.cliente,faturaDe(g)||'',details].join(' '));
 }
 function renderIndex(groups){ return `<div class="index-title">Romaneios gerados</div><div class="index-scroll"><table class="index-table"><thead><tr><th>Carga</th><th>Rota</th><th>Código</th><th>Loja</th><th>Pedidos</th><th>Volumes</th><th></th></tr></thead><tbody>${groups.map(g=>`<tr data-filter="${esc(groupSearchKey(g))}"><td>${esc(g.carga)}</td><td>${esc(g.rota)}</td><td>${esc(g.codCliente)}</td><td>${esc(g.cliente)}</td><td>${g.pedidos}</td><td>${g.volumes}</td><td style="text-align:center"><button class="linkbtn" data-go="${g.id}">Ver romaneio</button></td></tr>`).join('')}</tbody></table></div>`; }
 function addPedidoForm(g){
@@ -361,7 +364,7 @@ function validateForMode(){ if(!state.rows.length)return {ok:false,msg:'Selecion
 function updateReady(){ if(!state.rows.length)return; const v=validateForMode();
 if(!v.ok){ status(v.msg,state.mode==='complete'&&v.msg.includes('CONFERIDO')?'warn':'err'); state.generated=false; $('#generated').classList.remove('show'); $('#printAllTop').disabled=true; return; }
 status(`${state.groups.length} romaneio(s) pronto(s). Aperte Enter para imprimir.${state.aviso?' '+state.aviso:''}`,state.aviso?'warn':'ok'); renderGenerated(); }
-async function handleFiles(list,avisoExtra=''){
+async function handleFiles(list,avisoExtra='',faturas={}){
 const files=[...list]; if(!files.length)return; status(files.length>1?`Lendo ${files.length} planilhas...`:'Lendo a planilha...');
 const rows=[],seen=new Set(),falhas=[],abas=[]; let headers=null,repetidos=0;
 for(const file of files){ try{ const sheet=chooseSheet(await parseFile(file)); if(!sheet)throw new Error('faltam colunas obrigatórias: '+REQUIRED_SIMPLE.join(', ')); const o=rowObjects(sheet); headers=headers?headers.filter(h=>o.headers.includes(h)):o.headers; abas.push(sheet.name);
@@ -370,11 +373,11 @@ for(const r of o.rows){ const k=[r.CARGA,r.COD_CLIENTE,r.PEDIDO,r.NR_VOL].map(v=
 catch(e){ console.error(e); falhas.push(`${file.name} (${e.message||e})`); } }
 const groups=groupData(rows); const erroLeitura=falhas.length?'Não foi possível ler: '+falhas.join('; ')+'.':'';
 if(!groups.length){ resetFile(false); status(erroLeitura||'Nenhuma combinação de CARGA + COD_CLIENTE foi encontrada.','err'); return; }
-state.rows=rows; state.headers=headers; state.groups=groups; state.aviso=[avisoExtra,erroLeitura,repetidos?`${repetidos} volume(s) repetido(s) ignorado(s).`:''].filter(Boolean).join(' ');
+state.rows=rows; state.headers=headers; state.groups=groups; state.faturas=faturas; state.aviso=[avisoExtra,erroLeitura,repetidos?`${repetidos} volume(s) repetido(s) ignorado(s).`:''].filter(Boolean).join(' ');
 $('#metaRows').textContent=rows.length.toLocaleString('pt-BR');$('#metaCarga').textContent=unique(groups.map(g=>g.carga)).join(', ');$('#metaGroups').textContent=groups.length;
 $('#metaSheet').textContent=abas.length>1?abas.length:abas[0];$('#metaSheetLabel').textContent=abas.length>1?'Planilhas lidas':'Aba lida';$('#fileMeta').classList.add('show');$('#clearFile').disabled=false; updateReady();
 }
-function resetFile(setStatus=true){ state.rows=[];state.aviso='';state.headers=[];state.groups=[];state.generated=false;$('#fileInput').value='';$('#fileMeta').classList.remove('show');$('#clearFile').disabled=true;$('#printAllTop').disabled=true;$('#generated').classList.remove('show');$('#indexWrap').innerHTML='';$('#romaneios').innerHTML='';$('#search').value='';$('#filterCount').textContent='';$('#noResults').classList.remove('show');if(setStatus)status('Nenhuma planilha carregada.'); }
+function resetFile(setStatus=true){ state.rows=[];state.faturas={};state.aviso='';state.headers=[];state.groups=[];state.generated=false;$('#fileInput').value='';$('#fileMeta').classList.remove('show');$('#clearFile').disabled=true;$('#printAllTop').disabled=true;$('#generated').classList.remove('show');$('#indexWrap').innerHTML='';$('#romaneios').innerHTML='';$('#search').value='';$('#filterCount').textContent='';$('#noResults').classList.remove('show');if(setStatus)status('Nenhuma planilha carregada.'); }
 
 function csvEscape(v){ const s=String(v??''); return /[;"\n\r]/.test(s)?'"'+s.replaceAll('"','""')+'"':s; }
 function downloadBlob(name,content,type){ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([content],{type}));a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500); }
@@ -398,17 +401,19 @@ const semExe=busca&&busca.url===''?'O servidor do Gerador está fora do ar. Avis
 async function buscarCargas(){
 const nums=unique($('#buscaCarga').value.split(/[^0-9]+/).filter(Boolean));
 if(!nums.length){ status('Digite o número da carga.','err'); $('#buscaCarga').focus(); return; }
-$('#buscaBtn').disabled=true; const files=[],vazias=[];
+$('#buscaBtn').disabled=true; const files=[],vazias=[],faturas={}; let erroNf='';
 try{ for(const n of nums){ status(`Buscando a carga ${n} no ALCIS...`);
 const r=await fetch(`${busca.url}/carga?n=${n}&t=${busca.t}`).catch(()=>null);
 if(!r){ status(semExe,'err'); return; }
 if(r.status===401){ $('#loginBox').hidden=false; $('#loginUser').focus(); status('Entre com o usuário do PWA do ALCIS para buscar cargas.','warn'); return; }
 if(!r.ok){ status(await r.text(),'err'); return; }
+// NFs das lojas, vindas do sistema de rotas junto com a carga (so pelo servidor da rede)
+const xf=r.headers.get('X-Faturas'); if(xf){ try{ faturas[cargaKey(n)]=JSON.parse(xf); }catch{} } if(r.headers.get('X-Faturas-Erro')) erroNf=r.headers.get('X-Faturas-Erro');
 const txt=await r.text(); if(txt.trim().split(/\r?\n/).length<2){ vazias.push(n); continue; }
 files.push(new File([txt],`Carga ${n}.csv`,{type:'text/csv'})); }
-const aviso=vazias.length?`Carga ${vazias.join(', ')} não encontrada no ALCIS.`:'';
+const aviso=[vazias.length?`Carga ${vazias.join(', ')} não encontrada no ALCIS.`:'',erroNf?`Faturas indisponíveis: ${erroNf}.`:''].filter(Boolean).join(' ');
 if(!files.length){ status(aviso,'err'); return; }
-await handleFiles(files,aviso);
+await handleFiles(files,aviso,faturas);
 } finally { $('#buscaBtn').disabled=false; } }
 async function salvarLogin(){
 const u=$('#loginUser').value.trim(), p=$('#loginPass').value;
