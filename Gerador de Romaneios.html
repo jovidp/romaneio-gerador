@@ -54,7 +54,12 @@ input[type=file]{display:none}
 .generated{margin-top:22px;display:none}.generated.show{display:block}
 .toolbar{position:sticky;top:0;z-index:40;background:rgba(220,223,218,.96);border-bottom:1px solid var(--line);padding:10px 0;display:flex;gap:8px;align-items:center;flex-wrap:wrap}.toolbar .spacer{flex:1}.toolbar input{min-width:290px;max-width:100%;border:1px solid var(--line);border-radius:4px;padding:8px 10px;background:#fff}.filter-count{font-size:12.5px;color:var(--muted);white-space:nowrap}.no-results{display:none;background:var(--panel);border:1px dashed var(--line);border-radius:6px;padding:18px;text-align:center;color:var(--muted);margin-bottom:18px}.no-results.show{display:block}
 .index-wrap{background:var(--panel);border:1px solid var(--line);border-radius:6px;overflow:hidden;margin:14px 0 18px}.index-title{padding:16px 18px 12px;font:600 24px var(--display)}.index-scroll{overflow:auto}table{border-collapse:collapse;width:100%}.index-table th{text-align:left;font:600 16px var(--display);padding:10px 16px;border-top:1px solid var(--line);border-bottom:2px solid var(--ink)}.index-table td{padding:12px 16px;border-bottom:1px solid var(--line);font-size:17px}.index-table tr:last-child td{border-bottom:0}.index-table td:nth-child(5),.index-table td:nth-child(6),.index-table th:nth-child(5),.index-table th:nth-child(6){text-align:right}.linkbtn{border:0;background:none;color:var(--kraft);font-weight:600;font-size:17px;padding:4px 0;text-decoration:underline}
-.romaneios{display:flex;flex-direction:column;gap:22px}.romaneio-shell{background:#c9cdc7;border-radius:6px;padding:18px}.romaneio-label{max-width:210mm;margin:0 auto 10px;display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:13px}.romaneio-label b{font:600 16px var(--display);display:block}.romaneio-label span{color:#454c51}.paper{width:min(210mm,100%);min-height:297mm;margin:auto;background:#fff;box-shadow:0 2px 0 rgba(42,47,51,.25);padding:8mm 7mm;font-family:Arial,Helvetica,sans-serif;color:#000;overflow:hidden;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.romaneios{display:flex;flex-direction:column;gap:22px}.romaneio-shell{background:#c9cdc7;border-radius:6px;padding:18px}.romaneio-label{max-width:210mm;margin:0 auto 10px;display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:13px}.romaneio-label b{font:600 16px var(--display);display:block}.romaneio-label span{color:#454c51}
+.rom-acoes{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.add-ped{max-width:210mm;margin:0 auto 10px;display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;padding:12px;border:1px solid var(--line);border-radius:4px;background:#fff}
+.add-ped[hidden]{display:none}.add-ped .field input{min-width:0}.add-ped .field{flex:1 1 140px}.add-ped .field.vols{flex:3 1 260px}
+.add-err{flex-basis:100%;color:var(--err);font-size:13px}.add-err:empty{display:none}
+.manuais{max-width:210mm;margin:-4px auto 10px;font-size:13px;color:#454c51}.manuais .linkbtn{font-size:13px}.paper{width:min(210mm,100%);min-height:297mm;margin:auto;background:#fff;box-shadow:0 2px 0 rgba(42,47,51,.25);padding:8mm 7mm;font-family:Arial,Helvetica,sans-serif;color:#000;overflow:hidden;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 .paper.simple{font-size:9pt}.paper.complete{font-size:9pt}
 .doc-title{text-align:center;font-size:18pt;font-weight:800;padding:3px 0 7px}.carga-title{text-align:center;font-size:12pt;font-weight:700;padding:0 0 2px}.store-title{text-align:center;font-size:16pt;font-weight:800;padding:4px 0 9px;border-bottom:1px solid #333;margin-bottom:6px}
 .rtable{width:100%;table-layout:fixed}.rtable th{background:#d0d0d0;color:#000;font-weight:700;text-align:center;vertical-align:middle;border:1px solid #000;padding:5px 4px;font-size:8.5pt}.rtable td{border:1px solid #000;padding:2px 5px;vertical-align:middle;height:18px;word-break:break-word}.rtable tbody tr.alt td{background:#ececec}.rtable .center{text-align:center}.rtable .received{font-size:13pt;text-align:center}.rtable .total td{background:#d9d9d9;font-weight:800;text-align:center;padding:6px}
@@ -73,7 +78,7 @@ input[type=file]{display:none}
 .rtable tr.sign-row{break-before:avoid;page-break-before:avoid;break-inside:avoid;page-break-inside:avoid}.rtable tr.sign-row>td{border:0;padding:0;height:auto;background:#fff}
 @media print{
 @page{size:A4 portrait;margin:7mm}
-body{background:#fff}.app-header,main>.grid,.toolbar,.index-wrap,.romaneio-label,.toast{display:none!important}
+body{background:#fff}.app-header,main>.grid,.toolbar,.index-wrap,.romaneio-label,.add-ped,.manuais,.toast{display:none!important}
 main{max-width:none;margin:0;padding:0}.generated{display:block!important}.romaneios{gap:0}.romaneio-shell{padding:0;background:#fff;border-radius:0;break-after:page;page-break-after:always;break-inside:auto;page-break-inside:auto}.romaneio-shell:last-child{break-after:auto;page-break-after:auto}.paper{width:auto;min-height:0;padding:0;box-shadow:none;margin:0;overflow:visible;break-inside:auto;page-break-inside:auto}.rtable,.rtable tbody{break-inside:auto;page-break-inside:auto}.rtable thead{display:table-header-group}.rtable tr{break-inside:avoid;page-break-inside:avoid}.rtable tr.total{break-before:avoid;page-break-before:avoid}.simple-footer,.receipt-text,.signatures,.document-line{break-inside:avoid;page-break-inside:avoid}
 }
 </style>
@@ -103,7 +108,7 @@ main{max-width:none;margin:0;padding:0}.generated{display:block!important}.roman
 <div class="busca-ou">ou use a planilha</div>
 </div>
 <div class="dropzone" id="dropzone">
-<strong>Solte as planilhas aqui</strong><span>uma ou várias cargas de uma vez, ou arraste em cima do ícone do Gerador</span>
+<strong>Solte as planilhas aqui</strong><span>uma ou várias cargas de uma vez<span id="dicaIcone" hidden>, ou arraste em cima do ícone do Gerador</span></span>
 <div class="drop-actions"><label class="btn primary" for="fileInput" id="pickFile" tabindex="0">Escolher arquivo</label><button class="btn" id="clearFile" type="button" disabled>Limpar</button></div>
 <input id="fileInput" type="file" multiple accept=".xlsx,.xlsm,.ods,.csv,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.oasis.opendocument.spreadsheet">
 </div>
@@ -288,16 +293,44 @@ const details=g.items.flatMap(r=>[r.PEDIDO,r.TIPO_PEDIDO,r.NR_VOL,r.VOLUMES_EMB]
 return searchNorm([g.carga,g.rota,g.codCliente,g.cliente,details].join(' '));
 }
 function renderIndex(groups){ return `<div class="index-title">Romaneios gerados</div><div class="index-scroll"><table class="index-table"><thead><tr><th>Carga</th><th>Rota</th><th>Código</th><th>Loja</th><th>Pedidos</th><th>Volumes</th><th></th></tr></thead><tbody>${groups.map(g=>`<tr data-filter="${esc(groupSearchKey(g))}"><td>${esc(g.carga)}</td><td>${esc(g.rota)}</td><td>${esc(g.codCliente)}</td><td>${esc(g.cliente)}</td><td>${g.pedidos}</td><td>${g.volumes}</td><td style="text-align:center"><button class="linkbtn" data-go="${g.id}">Ver romaneio</button></td></tr>`).join('')}</tbody></table></div>`; }
-function renderGenerated(){
+function addPedidoForm(g){
+const tipo=text(g.items.find(r=>!r._manual)?.TIPO_PEDIDO||g.items[0]?.TIPO_PEDIDO||'');
+const manuais=unique(g.items.filter(r=>r._manual).map(r=>text(r.PEDIDO)));
+return `<form class="add-ped" data-add="${g.id}" hidden autocomplete="off"><div class="field"><label>Pedido</label><input name="pedido" inputmode="numeric" placeholder="ex.: 700123"></div><div class="field"><label>Tipo de pedido</label><input name="tipo" list="tiposPedido" value="${esc(tipo)}"></div><div class="field vols"><label>Nº dos volumes (separe por espaço ou vírgula; faixa: 189460-189462)</label><input name="vols" inputmode="numeric"></div><button class="btn accent" type="submit">Adicionar</button><button class="btn" type="button" data-addclose="${g.id}">Cancelar</button><div class="add-err"></div></form>`+
+(manuais.length?`<div class="manuais">Adicionado(s) à mão: ${manuais.map(p=>`<b>${esc(p)}</b> <button class="linkbtn" type="button" data-rm="${g.id}" data-pedido="${esc(p)}">remover</button>`).join(' · ')}</div>`:'');
+}
+function renderGenerated(focusId){
 const c=cfg();
 $('#indexWrap').innerHTML=renderIndex(state.groups);
 const vias=c.copies==='2'?2:1;
-$('#romaneios').innerHTML=state.groups.map((g,i)=>{ const key=esc(groupSearchKey(g)), paper=state.mode==='simple'?renderSimple(g,c):renderComplete(g,c); return `<section class="romaneio-shell" id="${g.id}" data-g="${g.id}" data-filter="${key}"><div class="romaneio-label"><div><b>${esc(g.codCliente)} - ${esc(g.cliente)}</b><span>Romaneio ${i+1} de ${state.groups.length}, carga ${esc(g.carga)}, ${g.volumes} volume(s)</span></div><button class="btn" type="button" data-printone="${g.id}">Imprimir este</button></div>${paper}</section>`+`<section class="romaneio-shell via-extra" data-g="${g.id}" data-filter="${key}">${paper}</section>`.repeat(vias-1); }).join('');
+$('#romaneios').innerHTML=`<datalist id="tiposPedido">${unique(state.rows.map(r=>text(r.TIPO_PEDIDO)).filter(Boolean)).map(t=>`<option value="${esc(t)}">`).join('')}</datalist>`+state.groups.map((g,i)=>{ const key=esc(groupSearchKey(g)), paper=state.mode==='simple'?renderSimple(g,c):renderComplete(g,c); return `<section class="romaneio-shell" id="${g.id}" data-g="${g.id}" data-filter="${key}"><div class="romaneio-label"><div><b>${esc(g.codCliente)} - ${esc(g.cliente)}</b><span>Romaneio ${i+1} de ${state.groups.length}, carga ${esc(g.carga)}, ${g.volumes} volume(s)</span></div><div class="rom-acoes"><button class="btn" type="button" data-addopen="${g.id}">+ Adicionar pedido</button><button class="btn" type="button" data-printone="${g.id}">Imprimir este</button></div></div>${addPedidoForm(g)}${paper}</section>`+`<section class="romaneio-shell via-extra" data-g="${g.id}" data-filter="${key}">${paper}</section>`.repeat(vias-1); }).join('');
 $('#generated').classList.add('show'); state.generated=true; $('#printAllTop').disabled=false; wireGenerated();
 filterGenerated($('#search').value);
-setTimeout(()=>$('#generated').scrollIntoView({behavior:'smooth',block:'start'}),60);
+setTimeout(()=>(focusId&&document.getElementById(focusId)||$('#generated')).scrollIntoView({behavior:'smooth',block:'start'}),60);
 }
-function wireGenerated(){ $$('[data-go]').forEach(b=>b.onclick=()=>document.getElementById(b.dataset.go)?.scrollIntoView({behavior:'smooth',block:'start'})); $$('[data-printone]').forEach(b=>b.onclick=()=>printOne(b.dataset.printone)); }
+// volumes digitados: "189460 189461", "189460,189461" ou faixa "189460-189462"
+function parseVolumes(s){ const out=[]; for(const t of String(s).split(/[\s,;]+/).filter(Boolean)){ const m=t.match(/^(\d+)-(\d+)$/); if(m){ const a=Number(m[1]),b=Number(m[2]); if(b<a||b-a>499)throw new Error(`Faixa de volumes inválida: ${t}`); for(let n=a;n<=b;n++)out.push(String(n)); } else if(/^\d+$/.test(t))out.push(t); else throw new Error(`Volume inválido: ${t}`); } return unique(out); }
+function refreshGroup(g){ g.pedidos=unique(g.items.map(x=>text(x.PEDIDO))).length; g.volumes=g.items.length; $('#metaRows').textContent=state.rows.length.toLocaleString('pt-BR'); }
+function addPedido(id,form){
+const g=state.groups.find(x=>x.id===id), erro=m=>{ form.querySelector('.add-err').textContent=m; };
+const pedido=form.pedido.value.trim(), tipo=form.tipo.value.trim(); let vols;
+if(!/^\d+$/.test(pedido)){ erro('Digite o número do pedido.'); form.pedido.focus(); return; }
+try{ vols=parseVolumes(form.vols.value); }catch(e){ erro(e.message); form.vols.focus(); return; }
+if(!vols.length){ erro('Digite o número de pelo menos um volume.'); form.vols.focus(); return; }
+// o mesmo volume em dois romaneios da carga faria a caixa ir para duas lojas
+for(const outro of state.groups){ if(outro.carga!==g.carga)continue; const rep=vols.filter(v=>outro.items.some(r=>text(r.NR_VOL).trim()===v)); if(rep.length){ erro(`Volume ${rep.join(', ')} já está no romaneio ${outro===g?'desta loja':'da loja '+outro.codCliente+' - '+outro.cliente}.`); form.vols.focus(); return; } }
+const novos=vols.map(v=>({CARGA:g.carga,ROTA:g.rota,COD_CLIENTE:g.codCliente,CLIENTE:g.cliente,PEDIDO:pedido,TIPO_PEDIDO:tipo,NR_VOL:v,VOLUMES_EMB:'',CONFERIDO:'',_manual:true}));
+g.items.push(...novos); state.rows.push(...novos); refreshGroup(g); renderGenerated(id); toast(`Pedido ${pedido} adicionado com ${vols.length} volume(s).`);
+}
+function removePedido(id,pedido){
+const g=state.groups.find(x=>x.id===id), manual=r=>r._manual&&r.CARGA===g.carga&&r.COD_CLIENTE===g.codCliente&&text(r.PEDIDO)===pedido;
+g.items=g.items.filter(r=>!manual(r)); state.rows=state.rows.filter(r=>!manual(r)); refreshGroup(g); renderGenerated(id); toast(`Pedido ${pedido} removido.`);
+}
+function wireGenerated(){ $$('[data-go]').forEach(b=>b.onclick=()=>document.getElementById(b.dataset.go)?.scrollIntoView({behavior:'smooth',block:'start'})); $$('[data-printone]').forEach(b=>b.onclick=()=>printOne(b.dataset.printone));
+$$('[data-addopen]').forEach(b=>b.onclick=()=>{ const f=$(`form[data-add="${b.dataset.addopen}"]`); f.hidden=false; f.pedido.focus(); });
+$$('[data-addclose]').forEach(b=>b.onclick=()=>{ $(`form[data-add="${b.dataset.addclose}"]`).hidden=true; });
+$$('form[data-add]').forEach(f=>f.onsubmit=e=>{ e.preventDefault(); addPedido(f.dataset.add,f); });
+$$('[data-rm]').forEach(b=>b.onclick=()=>removePedido(b.dataset.rm,b.dataset.pedido)); }
 const romName=g=>`Romaneio ${g.carga} - ${g.codCliente} ${g.cliente}`;
 function printAs(name){ const old=document.title; document.title=name.replace(/[\\/:*?"<>|]+/g,'-').replace(/\s+/g,' ').trim(); window.addEventListener('afterprint',()=>{document.title=old;},{once:true}); window.print(); }
 function printAll(){ const gs=state.groups; printAs(gs.length===1?romName(gs[0]):`Romaneios carga ${unique(gs.map(g=>g.carga)).join(', ')}`); }
@@ -385,6 +418,7 @@ $('#loginBtn').disabled=false;
 if(!r){ status(semExe,'err'); return; }
 if(!r.ok){ status(await r.text(),'err'); return; }
 $('#loginPass').value=''; $('#loginBox').hidden=true; toast('Login salvo neste computador.'); buscarCargas(); }
+if(busca&&busca.url) $('#dicaIcone').hidden=false; // arrastar no icone so existe no .exe
 if(busca){ $('#buscaBox').hidden=false; $('#buscaBtn').onclick=buscarCargas;
 $('#buscaCarga').onkeydown=e=>{ if(e.key==='Enter'){ e.preventDefault(); buscarCargas(); } };
 $('#loginPass').onkeydown=e=>{ if(e.key==='Enter'){ e.preventDefault(); salvarLogin(); } }; $('#loginBtn').onclick=salvarLogin;
