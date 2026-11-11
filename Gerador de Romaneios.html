@@ -11,6 +11,21 @@
 --display:Bahnschrift,"DIN Alternate","Arial Narrow",Arial,sans-serif;
 }
 *{box-sizing:border-box}
+/* boas-vindas: so no link do servidor da rede */
+.bv{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:16px;background:radial-gradient(circle at 20% 15%,#fbe9d0 0,transparent 45%),radial-gradient(circle at 85% 85%,#f6dccb 0,transparent 40%),#fdf6ec;transition:opacity .35s,visibility .35s}
+.bv[hidden]{display:none}.bv.saindo{opacity:0;visibility:hidden}
+.bv-card{text-align:center;max-width:420px}
+.bv-caixa{width:170px;height:auto;animation:bv-pula 2.4s ease-in-out infinite;filter:drop-shadow(0 10px 8px rgba(110,72,32,.18))}
+.bv-sombra{width:110px;height:12px;margin:-4px auto 18px;border-radius:50%;background:rgba(110,72,32,.14);animation:bv-sombra 2.4s ease-in-out infinite}
+.bv h1{font:600 30px/1.15 var(--display);margin:0 0 8px;color:var(--kraft-dk)}
+.bv p{margin:0 0 22px;font-size:16px;color:#7a5a3c}
+.bv-btn{border:0;border-radius:999px;padding:13px 30px;font:600 17px var(--display);color:#fff;background:var(--kraft);box-shadow:0 4px 0 var(--kraft-dk);transition:transform .1s,box-shadow .1s}
+.bv-btn:hover{background:#9a6a33}.bv-btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--kraft-dk)}
+.bv-dica{display:block;margin-top:12px;font-size:12.5px;color:#a08670}
+@keyframes bv-pula{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-14px) rotate(2deg)}}
+@keyframes bv-sombra{0%,100%{transform:scaleX(1);opacity:1}50%{transform:scaleX(.75);opacity:.6}}
+@media (prefers-reduced-motion:reduce){.bv-caixa,.bv-sombra{animation:none}}
+@media print{.bv{display:none!important}}
 html{scroll-behavior:smooth}
 body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 "Segoe UI",Arial,sans-serif}
 button,input,select,textarea{font:inherit;color:inherit}
@@ -84,6 +99,27 @@ main{max-width:none;margin:0;padding:0}.generated{display:block!important}.roman
 </style>
 </head>
 <body>
+<div class="bv" id="boasVindas" hidden role="dialog" aria-labelledby="bvOla">
+<div class="bv-card">
+<svg class="bv-caixa" viewBox="0 0 170 150" aria-hidden="true">
+<path d="M20 52 L85 30 L150 52 L150 122 L85 144 L20 122 Z" fill="#c9965c"/>
+<path d="M20 52 L85 74 L85 144 L20 122 Z" fill="#b98449"/>
+<path d="M20 52 L85 30 L150 52 L85 74 Z" fill="#dcae74"/>
+<path d="M52 41 L117 63 L117 80 L104 76 L104 68 L52 50 Z" fill="#f0d3a6" opacity=".9"/>
+<path d="M20 52 L5 32 L70 10 L85 30 Z" fill="#e4bb84"/><path d="M150 52 L165 32 L100 10 L85 30 Z" fill="#d6a66b"/>
+<circle cx="40" cy="96" r="4.5" fill="#3b2a1c"/><circle cx="66" cy="105" r="4.5" fill="#3b2a1c"/>
+<circle cx="41.5" cy="94.5" r="1.4" fill="#fff"/><circle cx="67.5" cy="103.5" r="1.4" fill="#fff"/>
+<path d="M46 110 Q53 117 60 112" stroke="#3b2a1c" stroke-width="3" fill="none" stroke-linecap="round"/>
+<ellipse cx="33" cy="106" rx="6" ry="3.5" fill="#f19a8e" opacity=".7"/><ellipse cx="72" cy="118" rx="6" ry="3.5" fill="#f19a8e" opacity=".7"/>
+<path d="M124 92 c-4-6-13-2-9 5 l9 9 9-9 c4-7-5-11-9-5z" fill="#e8776a"/>
+</svg>
+<div class="bv-sombra"></div>
+<h1 id="bvOla">Olá, expedição!</h1>
+<p>Vamos montar os romaneios de hoje? Cada caixinha no seu lugar. 📦</p>
+<button class="bv-btn" id="bvEntrar" type="button">Gerar romaneios</button>
+<span class="bv-dica">ou aperte Enter</span>
+</div>
+</div>
 <header class="app-header">
 <div class="inner">
 <div class="brand">
@@ -420,6 +456,10 @@ if(!r){ status(semExe,'err'); return; }
 if(!r.ok){ status(await r.text(),'err'); return; }
 $('#loginPass').value=''; $('#loginBox').hidden=true; toast('Login salvo neste computador.'); buscarCargas(); }
 if(busca&&busca.url) $('#dicaIcone').hidden=false; // arrastar no icone so existe no .exe
+if(busca&&busca.url===''){ const bv=$('#boasVindas'), h=new Date().getHours();
+$('#bvOla').textContent=(h<12?'Bom dia':h<18?'Boa tarde':'Boa noite')+', expedição!';
+bv.hidden=false; setTimeout(()=>$('#bvEntrar').focus(),0); // depois do foco na busca, logo abaixo
+$('#bvEntrar').onclick=()=>{ bv.classList.add('saindo'); setTimeout(()=>{bv.hidden=true;},350); $('#buscaCarga').focus(); }; }
 if(busca){ $('#buscaBox').hidden=false; $('#buscaBtn').onclick=buscarCargas;
 $('#buscaCarga').onkeydown=e=>{ if(e.key==='Enter'){ e.preventDefault(); buscarCargas(); } };
 $('#loginPass').onkeydown=e=>{ if(e.key==='Enter'){ e.preventDefault(); salvarLogin(); } }; $('#loginBtn').onclick=salvarLogin;
