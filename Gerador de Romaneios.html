@@ -319,7 +319,8 @@ try{ vols=parseVolumes(form.vols.value); }catch(e){ erro(e.message); form.vols.f
 if(!vols.length){ erro('Digite o número de pelo menos um volume.'); form.vols.focus(); return; }
 // o mesmo volume em dois romaneios da carga faria a caixa ir para duas lojas
 for(const outro of state.groups){ if(outro.carga!==g.carga)continue; const rep=vols.filter(v=>outro.items.some(r=>text(r.NR_VOL).trim()===v)); if(rep.length){ erro(`Volume ${rep.join(', ')} já está no romaneio ${outro===g?'desta loja':'da loja '+outro.codCliente+' - '+outro.cliente}.`); form.vols.focus(); return; } }
-const novos=vols.map(v=>({CARGA:g.carga,ROTA:g.rota,COD_CLIENTE:g.codCliente,CLIENTE:g.cliente,PEDIDO:pedido,TIPO_PEDIDO:tipo,NR_VOL:v,VOLUMES_EMB:'',CONFERIDO:'',_manual:true}));
+const agora=new Date(); // data/hora em que foi adicionado, no lugar da data de embalagem
+const novos=vols.map(v=>({CARGA:g.carga,ROTA:g.rota,COD_CLIENTE:g.codCliente,CLIENTE:g.cliente,PEDIDO:pedido,TIPO_PEDIDO:tipo,NR_VOL:v,VOLUMES_EMB:agora,CONFERIDO:'',_manual:true}));
 g.items.push(...novos); state.rows.push(...novos); refreshGroup(g); renderGenerated(id); toast(`Pedido ${pedido} adicionado com ${vols.length} volume(s).`);
 }
 function removePedido(id,pedido){
