@@ -359,7 +359,8 @@ $('#printAll').onclick=printAll;$('#printAllTop').onclick=printAll;$('#goIndex')
 ['#cfgTitle','#cfgBrand','#cfgProgram','#cfgIssuer','#cfgCarrier','#cfgDriver','#cfgPlate','#cfgCopies','#cfgReceipt'].forEach(s=>$(s).addEventListener('change',()=>{if(state.generated)renderGenerated();}));
 // busca no ALCIS: so existe quando a pagina foi aberta pelo .exe, que faz a consulta ao PWA
 const busca=window.__BUSCA;
-const semExe='O Gerador foi fechado. Abra de novo pelo ícone para buscar no ALCIS.';
+// url vazia = pagina aberta pelo link do servidor da rede (servidor.py)
+const semExe=busca&&busca.url===''?'O servidor do Gerador está fora do ar. Avise o responsável.':'O Gerador foi fechado. Abra de novo pelo ícone para buscar no ALCIS.';
 async function buscarCargas(){
 const nums=unique($('#buscaCarga').value.split(/[^0-9]+/).filter(Boolean));
 if(!nums.length){ status('Digite o número da carga.','err'); $('#buscaCarga').focus(); return; }
