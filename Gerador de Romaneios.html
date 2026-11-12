@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Gerador de Romaneios</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect x='1.5' y='5' width='37' height='32' rx='4' fill='%23b07a3c'/%3E%3Cpath d='M1.5 15h37' stroke='%23f4e4c9' stroke-width='3'/%3E%3Cpath d='M15 5v10h10V5' fill='%23f4e4c9'/%3E%3Crect x='18' y='21' width='16' height='11' rx='1.5' fill='%23fff'/%3E%3Cpath d='M21 25h10M21 28.5h6' stroke='%236e4820' stroke-width='2'/%3E%3C/svg%3E">
 <style>
 :root{
 --bg:#dcdfda;--panel:#f7f8f5;--ink:#2a2f33;--muted:#5a6267;--line:#c3c8c2;--kraft:#8c5f2c;--kraft-dk:#6e4820;
@@ -302,14 +303,14 @@ const manuais=unique(g.items.filter(r=>r._manual).map(r=>text(r.PEDIDO)));
 return `<form class="add-ped" data-add="${g.id}" hidden autocomplete="off"><div class="field"><label>Pedido</label><input name="pedido" inputmode="numeric" placeholder="ex.: 700123"></div><div class="field"><label>Tipo de pedido</label><input name="tipo" list="tiposPedido" value="${esc(tipo)}"></div><div class="field vols"><label>Nº dos volumes (separe por espaço ou vírgula; faixa: 189460-189462)</label><input name="vols" inputmode="numeric"></div><button class="btn accent" type="submit">Adicionar</button><button class="btn" type="button" data-addclose="${g.id}">Cancelar</button><div class="add-err"></div></form>`+
 (manuais.length?`<div class="manuais">Adicionado(s) à mão: ${manuais.map(p=>`<b>${esc(p)}</b> <button class="linkbtn" type="button" data-rm="${g.id}" data-pedido="${esc(p)}">remover</button>`).join(' · ')}</div>`:'');
 }
-function renderGenerated(focusId){
+function renderGenerated(focusId,semRolar){
 const c=cfg();
 $('#indexWrap').innerHTML=renderIndex(state.groups);
 const vias=c.copies==='2'?2:1;
 $('#romaneios').innerHTML=`<datalist id="tiposPedido">${unique(state.rows.map(r=>text(r.TIPO_PEDIDO)).filter(Boolean)).map(t=>`<option value="${esc(t)}">`).join('')}</datalist>`+state.groups.map((g,i)=>{ const key=esc(groupSearchKey(g)), paper=state.mode==='simple'?renderSimple(g,c):renderComplete(g,c); return `<section class="romaneio-shell" id="${g.id}" data-g="${g.id}" data-filter="${key}"><div class="romaneio-label"><div><b>${esc(g.codCliente)} - ${esc(g.cliente)}</b><span>Romaneio ${i+1} de ${state.groups.length}, carga ${esc(g.carga)}, ${g.volumes} volume(s)</span></div><div class="rom-acoes"><button class="btn" type="button" data-addopen="${g.id}">+ Adicionar pedido</button><button class="btn" type="button" data-printone="${g.id}">Imprimir este</button></div></div>${addPedidoForm(g)}${paper}</section>`+`<section class="romaneio-shell via-extra" data-g="${g.id}" data-filter="${key}">${paper}</section>`.repeat(vias-1); }).join('');
 $('#generated').classList.add('show'); state.generated=true; $('#printAllTop').disabled=false; wireGenerated();
 filterGenerated($('#search').value);
-setTimeout(()=>(focusId&&document.getElementById(focusId)||$('#generated')).scrollIntoView({behavior:'smooth',block:'start'}),60);
+if(!semRolar)setTimeout(()=>(focusId&&document.getElementById(focusId)||$('#generated')).scrollIntoView({behavior:'smooth',block:'start'}),60);
 }
 // volumes digitados: "189460 189461", "189460,189461" ou faixa "189460-189462"
 function parseVolumes(s){ const out=[]; for(const t of String(s).split(/[\s,;]+/).filter(Boolean)){ const m=t.match(/^(\d+)-(\d+)$/); if(m){ const a=Number(m[1]),b=Number(m[2]); if(b<a||b-a>499)throw new Error(`Faixa de volumes inválida: ${t}`); for(let n=a;n<=b;n++)out.push(String(n)); } else if(/^\d+$/.test(t))out.push(t); else throw new Error(`Volume inválido: ${t}`); } return unique(out); }
@@ -413,8 +414,16 @@ const txt=await r.text(); if(txt.trim().split(/\r?\n/).length<2){ vazias.push(n)
 files.push(new File([txt],`Carga ${n}.csv`,{type:'text/csv'})); }
 const aviso=[vazias.length?`Carga ${vazias.join(', ')} não encontrada no ALCIS.`:'',erroNf?`Faturas indisponíveis: ${erroNf}.`:''].filter(Boolean).join(' ');
 if(!files.length){ status(aviso,'err'); return; }
-await handleFiles(files,aviso,faturas);
+await handleFiles(files,aviso,faturas); vigiarFaturas();
 } finally { $('#buscaBtn').disabled=false; } }
+// loja com "FATURA: —": pergunta so as NFs a cada 10 s (ate 2 h) e mostra assim que a TOTVS liberar, sem buscar de novo
+let vigia=null;
+function vigiarFaturas(){ clearInterval(vigia); const inicio=Date.now(); let ocupado=false;
+vigia=setInterval(async()=>{ if(ocupado)return; const faltam=unique(state.groups.filter(g=>faturaDe(g)==='—').map(g=>cargaKey(g.carga)));
+if(!faltam.length||Date.now()-inicio>72e5){ clearInterval(vigia); return; } ocupado=true; let mudou=false;
+try{ for(const n of faltam){ const r=await fetch(`${busca.url}/faturas?n=${n}&t=${busca.t}`).catch(()=>null); const d=r&&r.ok?await r.json().catch(()=>null):null;
+if(d&&JSON.stringify(d)!==JSON.stringify(state.faturas[n])){ state.faturas[n]=d; mudou=true; } }
+if(mudou&&state.generated){ renderGenerated(null,true); toast('Fatura atualizada.'); } } finally { ocupado=false; } },10000); }
 async function salvarLogin(){
 const u=$('#loginUser').value.trim(), p=$('#loginPass').value;
 if(!u||!p){ status('Informe usuário e senha do PWA.','err'); return; }
